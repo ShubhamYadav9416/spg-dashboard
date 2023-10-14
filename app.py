@@ -98,14 +98,9 @@ if trait_pairs:
     # Display the ring chart
     st.plotly_chart(fig)
 
-    st.header("Percentage of Each Trait for Team Members")
+    st.header("Dominant Traits for Each Team Member")
 
-    # Display percentage of each trait for each person
+    # Display dominant trait for each person
     for index, row in df.iterrows():
-        st.write(f"**{row['Team Members']}**:")
-        total = 0
-        for trait in trait_pairs:
-            percentage = (row[trait] / 100) * trait_counts[trait]
-            st.write(f"    - {trait}: {percentage:.2f}%")
-            total += percentage
-        st.write(f"    Total: {total:.2f}%")
+        max_trait = max(trait_pairs, key=lambda trait: row[trait])
+        st.write(f"**{row['Team Members']}**: {max_trait}")
