@@ -74,37 +74,36 @@ if trait_pairs:
 
 # Ring chart for selected traits
 # Ring chart for selected traits
+# Ring chart for selected traits
 if trait_pairs:
     st.header("Team Trait Distribution")
 
-    # Initialize lists to store trait distributions and trait members
-    trait_distributions = []
-    trait_members = []
+    # Initialize a dictionary to store the counts for each trait
+    trait_counts = {}
 
     for trait in trait_pairs:
         # Create a data frame for trait distribution
         trait_distribution = df[trait].gt(50).sum()
-        trait_distributions.append(trait_distribution)
 
-        # Get the members for the trait
-        trait_member_list = df[df[trait] > 50]["Team Members"].tolist()
-        trait_members.append(trait_member_list)
+        # Store the count in the dictionary
+        trait_counts[trait] = trait_distribution
+
+    # Find the trait with the highest count
+    max_trait = max(trait_counts, key=trait_counts.get)
 
     # Create a ring chart
     fig = go.Figure(go.Pie(
-        labels=trait_pairs,
-        values=trait_distributions,  # Use the counts directly
+        labels=[max_trait],
+        values=[trait_counts[max_trait]],  # Use the count of the max trait
         hole=0.4,
-        pull=[0.1]*len(trait_pairs)
+        pull=[0.1]
     ))
 
     # Display the ring chart
     st.plotly_chart(fig)
 
-    st.header("Team Members for Each Trait")
+    st.header("Team Members for the Dominant Trait")
 
-    # Display members for each trait
-    for i, trait in enumerate(trait_pairs):
-        st.write(f"**{trait}**: {', '.join(trait_members[i])}")
-
-
+    # Get the members for the max trait
+    trait_members_max = df[df[max_trait] > 50]["Team Members"].tolist()
+    st.write(f"**{max_trait}**: {', '.join(trait_members_max)}")
