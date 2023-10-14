@@ -82,7 +82,7 @@ if trait_pairs:
     # Create a ring chart
     fig = go.Figure(go.Pie(
         labels=trait_distribution.index.tolist(),
-        values=trait_distribution.values,
+        values=trait_distribution.values.tolist(),  # Convert to list
         hole=0.4,
         pull=[0.1]*len(trait_distribution)
     ))
