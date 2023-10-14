@@ -78,10 +78,10 @@ if trait_pairs:
         col1.write(f"**{trait}**: {', '.join(trait_members)}")
 
 # Right column (Personality Traits Analysis)
-st.header("Personality Traits Analysis")
+col1.header("Personality Traits Analysis")
 
 # Dropdown menu to select team member
-selected_team_member = st.selectbox("Select Team Member:", df["Team Members"])
+selected_team_member = col1.selectbox("Select Team Member:", df["Team Members"])
 
 # Filter data based on the selected team member
 selected_data = df[df["Team Members"] == selected_team_member].squeeze()
@@ -106,4 +106,4 @@ fig.update_layout(
     barmode='group'
 )
 
-st.plotly_chart(fig)
+col1.plotly_chart(fig)
