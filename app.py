@@ -78,6 +78,8 @@ if trait_pairs:
 
     # Create a data frame for trait distribution
     trait_distribution = selected_data[trait_pairs].gt(50).sum()
+    trait_distribution = pd.Series(trait_distribution)
+
 
     # Create a ring chart
     fig = go.Figure(go.Pie(
@@ -95,33 +97,3 @@ if trait_pairs:
         trait_members = df[df[trait] > 50]["Team Members"].tolist()
         st.write(f"**{trait}**: {', '.join(trait_members)}")
 
-# Personality Traits Analysis
-st.header("Personality Traits Analysis")
-
-# Dropdown menu to select team member
-selected_team_member = st.selectbox("Select Team Member:", df["Team Members"], key="select_member_2")
-
-# Filter data based on the selected team member
-selected_data = df[df["Team Members"] == selected_team_member].squeeze()
-
-# Create a bar chart using Plotly
-fig = go.Figure()
-
-for i, trait in enumerate(selected_data.index[1:]):
-    fig.add_trace(go.Bar(
-        x=[trait],
-        y=[selected_data[trait]],
-        name=trait,
-        marker=dict(color=f'rgba({i * 30}, 50, 190, 0.7)'),  # Adjust color
-        text=[f'{selected_data[trait]}'],
-        textposition='auto',
-    ))
-
-fig.update_layout(
-    title=f"Personality Traits for {selected_team_member}",
-    xaxis=dict(title="Traits"),
-    yaxis=dict(title="Values"),
-    barmode='group'
-)
-
-st.plotly_chart(fig)
