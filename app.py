@@ -20,7 +20,7 @@ df = pd.read_csv(StringIO(data))
 st.title("Personality Traits Analysis")
 
 # Divide the page into two columns
-col1, col2 = st.beta_columns(2)
+col1, col2 = st.columns(2)
 
 # Left column
 with col1:
