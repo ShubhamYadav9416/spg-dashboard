@@ -73,27 +73,38 @@ if trait_pairs:
     st.write(f"You selected: {trait_pairs}")
 
 # Ring chart for selected traits
+# Ring chart for selected traits
 if trait_pairs:
     st.header("Team Trait Distribution")
 
-    # Create a data frame for trait distribution
-    trait_distribution = selected_data[trait_pairs].gt(50).sum()
-    trait_distribution = pd.Series(trait_distribution)
+    # Initialize lists to store trait distributions and trait members
+    trait_distributions = []
+    trait_members = []
 
+    for trait in trait_pairs:
+        # Create a data frame for trait distribution
+        trait_distribution = df[trait].gt(50).sum()
+        trait_distributions.append(trait_distribution)
+
+        # Get the members for the trait
+        trait_member_list = df[df[trait] > 50]["Team Members"].tolist()
+        trait_members.append(trait_member_list)
 
     # Create a ring chart
     fig = go.Figure(go.Pie(
-        labels=trait_distribution.index.tolist(),
-        values=trait_distribution.values.tolist(),  # Convert to list
+        labels=trait_pairs,
+        values=trait_distributions,  # Use the counts directly
         hole=0.4,
-        pull=[0.1]*len(trait_distribution)
+        pull=[0.1]*len(trait_pairs)
     ))
 
     # Display the ring chart
     st.plotly_chart(fig)
 
     st.header("Team Members for Each Trait")
-    for trait in trait_distribution.index:
-        trait_members = df[df[trait] > 50]["Team Members"].tolist()
-        st.write(f"**{trait}**: {', '.join(trait_members)}")
+
+    # Display members for each trait
+    for i, trait in enumerate(trait_pairs):
+        st.write(f"**{trait}**: {', '.join(trait_members[i])}")
+
 
