@@ -104,3 +104,19 @@ if trait_pairs:
     for index, row in df.iterrows():
         max_trait = max(trait_pairs, key=lambda trait: row[trait])
         st.write(f"**{row['Team Members']}**: {max_trait}")
+
+
+    # Stacked bar chart for selected traits
+    if trait_pairs:
+        st.header("Stacked Bar Chart for Selected Traits")
+    
+        # Create a DataFrame with selected traits for plotting
+        selected_data_plot = df.set_index('Team Members')[trait_pairs]
+    
+        # Create a stacked bar chart
+        fig = selected_data_plot.plot(kind='bar', stacked=True, colormap='viridis', figsize=(10, 6))
+        plt.title("Selected Traits for Each Team Member")
+        plt.xlabel("Team Members")
+        plt.ylabel("Trait Value")
+        st.pyplot(fig.figure)
+
