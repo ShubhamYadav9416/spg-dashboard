@@ -19,11 +19,8 @@ df = pd.read_csv(StringIO(data))
 # Streamlit app
 st.title("Personality Traits Analysis")
 
-# Single column layout
-col1 = st
-
 # Trait explanations and belonging
-col1.header("Trait Explanations")
+st.header("Trait Explanations")
 
 trait_descriptions = {
     "EXTROVERTED": "😄 Extroverted individuals are outgoing, energetic, and enthusiastic. They enjoy social interactions and thrive in group settings.",
@@ -38,25 +35,25 @@ trait_descriptions = {
     "TURBULENT": "😰 Turbulent individuals are emotionally sensitive, self-conscious, and prone to self-doubt. They may experience higher levels of stress and anxiety."
 }
 
-selected_team_member = col1.selectbox("Select Team Member:", df["Team Members"])
+selected_team_member = st.selectbox("Select Team Member:", df["Team Members"])
 selected_data = df[df["Team Members"] == selected_team_member].squeeze()
 
 for trait, description in trait_descriptions.items():
-    col1.write(f"**{trait}** : {description}")
+    st.write(f"**{trait}** : {description}")
 
-col1.header("Trait Belonging")
+st.header("Trait Belonging")
 
 for trait in selected_data.index[1:]:
     if selected_data[trait] > 50:
-        col1.write(f"{selected_team_member} belongs to the trait: {trait}")
+        st.write(f"{selected_team_member} belongs to the trait: {trait}")
 
-trait_pairs = col1.multiselect("Select Traits for Comparison:", df.columns[1:])
+trait_pairs = st.multiselect("Select Traits for Comparison:", df.columns[1:])
 if trait_pairs:
-    col1.write(f"You selected: {trait_pairs}")
+    st.write(f"You selected: {trait_pairs}")
 
 # Ring chart for selected traits
 if trait_pairs:
-    col1.header("Team Trait Distribution")
+    st.header("Team Trait Distribution")
 
     # Create a data frame for trait distribution
     trait_distribution = selected_data[trait_pairs].gt(50).sum()
@@ -70,18 +67,18 @@ if trait_pairs:
     ))
 
     # Display the ring chart
-    col1.plotly_chart(fig)
+    st.plotly_chart(fig)
 
-    col1.header("Team Members for Each Trait")
+    st.header("Team Members for Each Trait")
     for trait in trait_distribution.index:
         trait_members = df[df[trait] > 50]["Team Members"].tolist()
-        col1.write(f"**{trait}**: {', '.join(trait_members)}")
+        st.write(f"**{trait}**: {', '.join(trait_members)}")
 
-# Right column (Personality Traits Analysis)
-col1.header("Personality Traits Analysis")
+# Personality Traits Analysis
+st.header("Personality Traits Analysis")
 
 # Dropdown menu to select team member
-selected_team_member = col1.selectbox("Select Team Member:", df["Team Members"])
+selected_team_member = st.selectbox("Select Team Member:", df["Team Members"])
 
 # Filter data based on the selected team member
 selected_data = df[df["Team Members"] == selected_team_member].squeeze()
@@ -106,4 +103,4 @@ fig.update_layout(
     barmode='group'
 )
 
-col1.plotly_chart(fig)
+st.plotly_chart(fig)
