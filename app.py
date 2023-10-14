@@ -73,6 +73,7 @@ if trait_pairs:
     st.write(f"You selected: {trait_pairs}")
 
 # Ring chart for selected traits
+# Ring chart for selected traits
 if trait_pairs:
     st.header("Team Trait Distribution")
 
@@ -86,13 +87,6 @@ if trait_pairs:
         # Increment the count for the trait
         trait_counts[trait] += trait_distribution
 
-    # Find the dominant trait for each person
-    dominant_traits = {}
-
-    for index, row in df.iterrows():
-        max_trait = max(trait_pairs, key=lambda trait: row[trait])
-        dominant_traits[row["Team Members"]] = max_trait
-
     # Create a ring chart
     fig = go.Figure(go.Pie(
         labels=list(trait_counts.keys()),
@@ -104,8 +98,14 @@ if trait_pairs:
     # Display the ring chart
     st.plotly_chart(fig)
 
-    st.header("Dominant Traits for Each Team Member")
+    st.header("Percentage of Each Trait for Team Members")
 
-    # Display dominant trait for each person
-    for team_member, dominant_trait in dominant_traits.items():
-        st.write(f"**{team_member}**: {dominant_trait}")
+    # Display percentage of each trait for each person
+    for index, row in df.iterrows():
+        st.write(f"**{row['Team Members']}**:")
+        total = 0
+        for trait in trait_pairs:
+            percentage = (row[trait] / 100) * trait_counts[trait]
+            st.write(f"    - {trait}: {percentage:.2f}%")
+            total += percentage
+        st.write(f"    Total: {total:.2f}%")
