@@ -20,8 +20,8 @@ df = pd.read_csv(StringIO(data))
 st.title("Personality Traits Analysis")
 
 # Trait explanations and belonging
-st.header("Trait Explanations")
-
+selected_team_member = st.selectbox("Select Team Member:", df["Team Members"])
+selected_data = df[df["Team Members"] == selected_team_member].squeeze()
 # Create a bar chart using Plotly
 fig = go.Figure()
 
@@ -56,9 +56,7 @@ trait_descriptions = {
     "ASSERTIVE": "💪 Assertive individuals are confident, self-assured, and proactive. They are comfortable taking charge and making decisions.",
     "TURBULENT": "😰 Turbulent individuals are emotionally sensitive, self-conscious, and prone to self-doubt. They may experience higher levels of stress and anxiety."
 }
-
-selected_team_member = st.selectbox("Select Team Member:", df["Team Members"])
-selected_data = df[df["Team Members"] == selected_team_member].squeeze()
+st.header("Trait Explanations")
 
 for trait, description in trait_descriptions.items():
     st.write(f"**{trait}** : {description}")
