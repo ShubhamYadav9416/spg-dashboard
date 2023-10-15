@@ -116,37 +116,37 @@ if trait_pairs:
 
 #     st.header("Dominant Traits for Each Team Member from selected")
 
-st.title("Team Dominant Personality Traits Analysis")
+# st.title("Team Dominant Personality Traits Analysis")
 
-trait_pairs = st.multiselect("Select Traits for Comparison:", df.columns[1:], key="select_traits_for_comparison")
+# trait_pairs = st.multiselect("Select Traits for Comparison:", df.columns[1:], key="select_traits_for_comparison")
 
-if trait_pairs:
-    st.write(f"You selected: {trait_pairs}")
+# if trait_pairs:
+#     st.write(f"You selected: {trait_pairs}")
 
-    if trait_pairs:
-        st.header("Team Trait Distribution")
+#     if trait_pairs:
+#         st.header("Team Trait Distribution")
 
-        # Initialize a dictionary to store the counts for each dominant trait
-        dominant_trait_counts = {trait: 0 for trait in trait_pairs}
+#         # Initialize a dictionary to store the counts for each dominant trait
+#         dominant_trait_counts = {trait: 0 for trait in trait_pairs}
 
-        for index, row in df.iterrows():
-            max_trait = max(trait_pairs, key=lambda trait: row[trait])
-            dominant_trait_counts[max_trait] += 1
+#         for index, row in df.iterrows():
+#             max_trait = max(trait_pairs, key=lambda trait: row[trait])
+#             dominant_trait_counts[max_trait] += 1
 
-        # Create a ring chart
-        fig = go.Figure(go.Pie(
-            labels=list(dominant_trait_counts.keys()),
-            values=list(dominant_trait_counts.values()),
-            hole=0.4,
-            pull=[0.1]*len(dominant_trait_counts)
-        ))
+#         # Create a ring chart
+#         fig = go.Figure(go.Pie(
+#             labels=list(dominant_trait_counts.keys()),
+#             values=list(dominant_trait_counts.values()),
+#             hole=0.4,
+#             pull=[0.1]*len(dominant_trait_counts)
+#         ))
 
-        # Display the ring chart
-        st.plotly_chart(fig)
-    # Display dominant trait for each person
-    for index, row in df.iterrows():
-        max_trait = max(trait_pairs, key=lambda trait: row[trait])
-        st.write(f"**{row['Team Members']}**: {max_trait}")
+#         # Display the ring chart
+#         st.plotly_chart(fig)
+#     # Display dominant trait for each person
+#     for index, row in df.iterrows():
+#         max_trait = max(trait_pairs, key=lambda trait: row[trait])
+#         st.write(f"**{row['Team Members']}**: {max_trait}")
 
 
 # Streamlit app
@@ -178,7 +178,7 @@ trait_colors = {
     "TURBULENT": "rgba(128, 0, 128, 0.7)"
 }
 
-df_stack.plot(kind='bar', 
+ax = df_stack.plot(kind='bar', 
                     stacked=True, 
                     colormap='tab10', 
                     figsize=(10, 6))
@@ -186,7 +186,7 @@ df_stack.plot(kind='bar',
 # plt.legend(loc="upper left", ncol=2)
 plt.xlabel("Personality traits")
 plt.ylabel("Percentage")
-
+ax.get_legend().remove()
 
 for n, x in enumerate([*df_stack.index.values]):
     for (proportion, y_loc) in zip(df_stack.loc[x],
