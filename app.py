@@ -1,9 +1,15 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import plotly.graph_objects as go
 from io import StringIO
 import matplotlib.pyplot as plt
 # Define the CSV data
+import pandas as pd
+from io import StringIO
+import streamlit as st
+import plotly.graph_objs as go
+
 data = """
 Team Members,EXTROVERTED,INTROVERTED,INTUITIVE,OBSERVANT,THINKING,FEELING,JUDGING,PROSPECTING,ASSERTIVE,TURBULENT
 Ashish,17,83,65,35,23,77,35,65,36,64
@@ -16,60 +22,13 @@ Yukti,61,39,51,49,25,75,90,10,33,67
 # Create a DataFrame from the CSV data
 df = pd.read_csv(StringIO(data))
 
-# Streamlit app
-st.title("Personality Traits Analysis")
+st.title("Team Personality Traits Analysis")
 
-# Trait explanations and belonging
-selected_team_member = st.selectbox("Select Team Member:", df["Team Members"], key="select_member_1")
-selected_data = df[df["Team Members"] == selected_team_member].squeeze()
+dict_trait_pairs = {"EXTROVERTED-INTROVERTED":['INTROVERTED', 'EXTROVERTED'] ,"INTUITIVE-OBSERVANT":['INTUITIVE', 'OBSERVANT'],"THINKING-FEELING":['THINKING', 'FEELING'],"JUDGING-PROSPECTING":['JUDGING', 'PROSPECTING'],"ASSERTIVE-TURBULENT":['ASSERTIVE', 'TURBULENT']}
+trait_pairs_comb = st.selectbox("Select Traits for Comparison:", list(dict_trait_pairs.keys()), key="select_traits")
 
-# Create a bar chart using Plotly
-fig = go.Figure()
-
-for i, trait in enumerate(selected_data.index[1:]):
-    fig.add_trace(go.Bar(
-        x=[trait],
-        y=[selected_data[trait]],
-        name=trait,
-        marker=dict(color=f'rgba({i * 30}, 50, 190, 0.7)'),  # Adjust color
-        text=[f'{selected_data[trait]}'],
-        textposition='auto',
-    ))
-
-fig.update_layout(
-    title=f"Personality Traits for {selected_team_member}",
-    xaxis=dict(title="Traits"),
-    yaxis=dict(title="Values"),
-    barmode='group'
-)
-
-st.plotly_chart(fig)
-
-trait_descriptions = {
-    "EXTROVERTED": "😄 Extroverted individuals are outgoing, energetic, and enthusiastic. They enjoy social interactions and thrive in group settings.",
-    "INTROVERTED": "🤫 Introverted individuals are reserved, quiet, and thoughtful. They prefer solitary activities and find social interactions draining.",
-    "INTUITIVE": "🧠 Intuitive individuals rely on gut feelings, instincts, and imagination. They focus on possibilities and the future.",
-    "OBSERVANT": "👀 Observant individuals notice and focus on physical details. They are attentive to their surroundings and notice small changes.",
-    "THINKING": "🤔 Thinking individuals make decisions based on logic, analysis, and reason. They are objective and value fairness in decision-making.",
-    "FEELING": "❤️ Feeling individuals make decisions based on emotions, values, and personal beliefs. They consider the impact on others and seek harmony.",
-    "JUDGING": "🗂️ Judging individuals are organized, structured, and decisive. They prefer clear plans and order in their lives.",
-    "PROSPECTING": "🔄 Prospecting individuals are adaptable, spontaneous, and flexible. They enjoy new experiences and prefer to go with the flow.",
-    "ASSERTIVE": "💪 Assertive individuals are confident, self-assured, and proactive. They are comfortable taking charge and making decisions.",
-    "TURBULENT": "😰 Turbulent individuals are emotionally sensitive, self-conscious, and prone to self-doubt. They may experience higher levels of stress and anxiety."
-}
-st.header("Trait Explanations")
-
-for trait, description in trait_descriptions.items():
-    st.write(f"**{trait}** : {description}")
-
-st.header("Trait Belonging")
-
-for trait in selected_data.index[1:]:
-    if selected_data[trait] > 50:
-        st.write(f"{selected_team_member} belongs to the trait: {trait}")
-
-trait_pairs = st.multiselect("Select Traits for Comparison:", df.columns[1:], key="select_traits")
-if trait_pairs:
+if trait_pairs_comb:
+    trait_pairs = dict_trait_pairs[trait_pairs_comb]
     st.write(f"You selected: {trait_pairs}")
 
 # Ring chart for selected traits
@@ -119,4 +78,80 @@ if trait_pairs:
         plt.xlabel("Team Members")
         plt.ylabel("Trait Value")
         st.pyplot(fig.figure)
+
+
+
+
+
+
+
+# Streamlit app
+st.title("Individual Personality Traits Analysis")
+
+# Trait explanations and belonging
+selected_team_member = st.selectbox("Select Team Member:", df["Team Members"], key="select_member_1")
+selected_data = df[df["Team Members"] == selected_team_member].squeeze()
+
+data = [[selected_data.EXTROVERTED, selected_data.INTROVERTED],
+         [selected_data.INTUITIVE, selected_data.OBSERVANT],
+         [selected_data.THINKING, selected_data.FEELING],
+         [selected_data.JUDGING, selected_data.PROSPECTING],
+         [selected_data.ASSERTIVE, selected_data.TURBULENT]] 
+
+
+df_stack = pd.DataFrame(data, index=["EXTROVERTED-INTROVERTED","INTUITIVE-OBSERVANT","THINKING-FEELING","JUDGING-PROSPECTING","ASSERTIVE-TURBULENT"])
+
+trait_colors = {
+    "EXTROVERTED": "rgba(255, 0, 0, 0.7)",
+    "INTROVERTED": "rgba(0, 0, 255, 0.7)",
+    "INTUITIVE": "rgba(0, 255, 0, 0.7)",
+    "OBSERVANT": "rgba(255, 0, 255, 0.7)",
+    "THINKING": "rgba(255, 255, 0, 0.7)",
+    "FEELING": "rgba(0, 255, 255, 0.7)",
+    "JUDGING": "rgba(128, 128, 0, 0.7)",
+    "PROSPECTING": "rgba(0, 128, 0, 0.7)",
+    "ASSERTIVE": "rgba(0, 0, 128, 0.7)",
+    "TURBULENT": "rgba(128, 0, 128, 0.7)"
+}
+
+df_stack.plot(kind='bar', 
+                    stacked=True, 
+                    colormap='tab10', 
+                    figsize=(10, 6))
+
+# plt.legend(loc="upper left", ncol=2)
+plt.xlabel("Personality traits")
+plt.ylabel("Percentage")
+
+
+for n, x in enumerate([*df_stack.index.values]):
+    for (proportion, y_loc) in zip(df_stack.loc[x],
+                                   df_stack.loc[x].cumsum()):
+                
+        plt.text(x=n - 0.17,
+                 y=(y_loc - proportion) + (proportion / 2),
+                 s=f'{np.round(proportion , 1)}%', 
+                 color="black",
+                 fontsize=12,
+                 fontweight="bold")
+
+st.pyplot(plt)
+
+
+trait_descriptions = {
+    "EXTROVERTED": "😄 Extroverted individuals are outgoing, energetic, and enthusiastic. They enjoy social interactions and thrive in group settings.",
+    "INTROVERTED": "🤫 Introverted individuals are reserved, quiet, and thoughtful. They prefer solitary activities and find social interactions draining.",
+    "INTUITIVE": "🧠 Intuitive individuals rely on gut feelings, instincts, and imagination. They focus on possibilities and the future.",
+    "OBSERVANT": "👀 Observant individuals notice and focus on physical details. They are attentive to their surroundings and notice small changes.",
+    "THINKING": "🤔 Thinking individuals make decisions based on logic, analysis, and reason. They are objective and value fairness in decision-making.",
+    "FEELING": "❤️ Feeling individuals make decisions based on emotions, values, and personal beliefs. They consider the impact on others and seek harmony.",
+    "JUDGING": "🗂️ Judging individuals are organized, structured, and decisive. They prefer clear plans and order in their lives.",
+    "PROSPECTING": "🔄 Prospecting individuals are adaptable, spontaneous, and flexible. They enjoy new experiences and prefer to go with the flow.",
+    "ASSERTIVE": "💪 Assertive individuals are confident, self-assured, and proactive. They are comfortable taking charge and making decisions.",
+    "TURBULENT": "😰 Turbulent individuals are emotionally sensitive, self-conscious, and prone to self-doubt. They may experience higher levels of stress and anxiety."
+}
+st.header("Trait Explanations")
+
+for trait, description in trait_descriptions.items():
+    st.write(f"**{trait}** : {description}")
 
