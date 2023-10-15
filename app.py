@@ -81,8 +81,45 @@ if trait_pairs:
 
 
 
+st.title("Team Dominant Personality Traits Analysis")
 
+trait_pairs = st.multiselect("Select Traits for Comparison:", df.columns[1:], key="select_traits_for_comparision")
 
+if trait_pairs:
+    st.write(f"You selected: {trait_pairs}")
+
+# Ring chart for selected traits
+# Ring chart for selected traits
+if trait_pairs:
+    st.header("Team Trait Distribution")
+
+    # Initialize a dictionary to store the counts for each trait
+    trait_counts = {trait: 0 for trait in trait_pairs}
+
+    for trait in trait_pairs:
+        # Create a data frame for trait distribution
+        trait_distribution = df[trait].gt(50).sum()
+
+        # Increment the count for the trait
+        trait_counts[trait] += trait_distribution
+
+    # Create a ring chart
+    fig = go.Figure(go.Pie(
+        labels=list(trait_counts.keys()),
+        values=list(trait_counts.values()),  # Use the counts directly
+        hole=0.4,
+        pull=[0.1]*len(trait_counts)
+    ))
+
+    # Display the ring chart
+    st.plotly_chart(fig)
+
+    st.header("Dominant Traits for Each Team Member from selected")
+
+    # Display dominant trait for each person
+    for index, row in df.iterrows():
+        max_trait = max(trait_pairs, key=lambda trait: row[trait])
+        st.write(f"**{row['Team Members']}**: {max_trait}")
 
 
 # Streamlit app
